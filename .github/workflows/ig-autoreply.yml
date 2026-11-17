@@ -1,0 +1,28 @@
+name: متنفس | الرد الآلي على إنستقرام
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ig-autoreply
+  cancel-in-progress: false
+
+jobs:
+  reply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: autoreply
+          fetch-depth: 1
+      - name: Run auto-reply
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_AUTOREPLY_LIVE: ${{ vars.IG_AUTOREPLY_LIVE }}
+        run: python3 autoreply/ig_autoreply.py
